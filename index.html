@@ -432,7 +432,7 @@
   <!-- TOAST -->
   <div id="toast" role="alert" aria-live="polite">
     <span class="toast-icon">🚧</span>
-    <span class="toast-text">Portafolio de Design Web en construcción</span>
+    <span class="toast-text" id="toastText">Portafolio de Design Web en construcción</span>
     <button class="toast-close" id="toastClose" aria-label="Cerrar">✕</button>
   </div>
 
@@ -583,7 +583,7 @@
           </div>
         </div>
 
-        <div class="project-card secondary" onclick="window.location.href='#'">
+        <div class="project-card secondary" onclick="showToast('Portafolio de Plugins en construcción')">
           <div class="card-icon" style="font-size:1.1rem;">⚙️</div>
           <div class="card-type">Plugins de servidor</div>
           <div class="card-title">CH Plugins</div>
@@ -601,7 +601,7 @@
           </div>
         </div>
 
-        <div class="project-card secondary" id="cardWebDesign" onclick="showToast()">
+        <div class="project-card secondary" id="cardWebDesign" onclick="showToast('Portafolio de Design Web en construcción')">
           <div class="card-icon" style="font-size:1.1rem;">🌐</div>
           <div class="card-type">Desarrollo web</div>
           <div class="card-title">CH Design Web</div>
@@ -700,7 +700,6 @@
       panel3d.classList.remove('show');
       panel3dOverlay.classList.remove('show');
       document.body.style.overflow = '';
-      // limpia el iframe al cerrar para liberar recursos
       setTimeout(() => { panel3dIframe.src = ''; }, 400);
     }
 
@@ -709,24 +708,24 @@
       if (e.key === 'Escape') closePanel3d();
     });
 
-    // Toast para CH Design Web
-    const toast = document.getElementById('toast');
+    // Toast reutilizable con texto dinámico
+    const toast      = document.getElementById('toast');
+    const toastText  = document.getElementById('toastText');
     const toastClose = document.getElementById('toastClose');
     let toastLocked = false;
     let autoCloseTimer = null;
 
-    function showToast() {
+    function showToast(mensaje) {
       if (toastLocked) return;
       toastLocked = true;
+      toastText.textContent = mensaje;
       toast.classList.add('show');
-      // auto-cierre en 3 segundos
       autoCloseTimer = setTimeout(hideToast, 3000);
     }
 
     function hideToast() {
       clearTimeout(autoCloseTimer);
       toast.classList.remove('show');
-      // desbloquea solo cuando termina la animación de salida (350ms)
       setTimeout(() => { toastLocked = false; }, 350);
     }
 
