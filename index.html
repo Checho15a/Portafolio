@@ -288,42 +288,25 @@
     .card-arrow { color: var(--accent); font-size: 1.1rem; transition: transform var(--transition); }
     .project-card:hover .card-arrow { transform: translate(3px, -3px); }
 
-    /* ── Badges de estado en proyectos clickeables ── */
-    .card-badge {
-      position: absolute; top: 14px; right: 14px;
-      display: flex; align-items: center; gap: .4rem;
-      font-family: 'DM Mono', monospace; font-size: .6rem;
-      letter-spacing: .1em; text-transform: uppercase;
-      padding: .32rem .7rem; border-radius: 20px;
-      border: 1px solid var(--gold-bright);
-      color: var(--gold-bright);
-      background: rgba(240,193,75,.08);
-      box-shadow: 0 0 14px var(--gold-bright-glow);
-      animation: badgePulse 2.2s ease-in-out infinite;
-      z-index: 2;
-      transition: all var(--transition);
+    /* ── Resaltado de borde en proyectos clickeables ── */
+    .clickable-highlight {
+      border-color: var(--gold-bright) !important;
+      box-shadow: 0 0 0 1px var(--gold-bright-glow), 0 0 22px var(--gold-bright-glow);
+      animation: cardGlowPulse 2.2s ease-in-out infinite;
     }
-    .card-badge::before {
-      content: ''; width: 6px; height: 6px; border-radius: 50%;
-      background: var(--gold-bright); box-shadow: 0 0 8px var(--gold-bright);
-      flex-shrink: 0;
-    }
-    .card-badge.visited {
-      border-color: var(--gold-dim);
-      color: var(--gold-dim);
-      background: rgba(138,109,47,.1);
-      box-shadow: none;
+    .clickable-highlight.visited {
+      border-color: var(--gold-dim) !important;
+      box-shadow: 0 0 0 1px rgba(138,109,47,.3);
       animation: none;
     }
-    .card-badge.visited::before { background: var(--gold-dim); box-shadow: none; }
-    .card-badge.construction {
-      border-color: var(--construction);
-      color: var(--construction);
-      background: rgba(192,57,43,.1);
-      box-shadow: none;
-      animation: none;
+    .construction-highlight {
+      border-color: var(--construction) !important;
+      box-shadow: 0 0 0 1px rgba(192,57,43,.3);
     }
-    .card-badge.construction::before { background: var(--construction); box-shadow: none; }
+    @keyframes cardGlowPulse {
+      0%, 100% { box-shadow: 0 0 0 1px var(--gold-bright-glow), 0 0 16px var(--gold-bright-glow); }
+      50%      { box-shadow: 0 0 0 1px var(--gold-bright-glow), 0 0 30px var(--gold-bright-glow); }
+    }
     @keyframes badgePulse {
       0%, 100% { box-shadow: 0 0 14px var(--gold-bright-glow); }
       50%      { box-shadow: 0 0 24px var(--gold-bright-glow); }
@@ -615,8 +598,7 @@
       <h2 class="section-title">Lo que estoy construyendo</h2>
       <div class="projects-grid">
 
-        <div class="project-card primary" id="cardMods" onclick="markVisited('mods','badgeMods'); window.open('https://checho15a.github.io/chmods/', '_blank')" style="display:flex;flex-direction:column;">
-          <div class="card-badge" id="badgeMods">Visitar</div>
+        <div class="project-card primary clickable-highlight" id="cardMods" onclick="markVisited('mods','cardMods'); window.open('https://checho15a.github.io/chmods/', '_blank')" style="display:flex;flex-direction:column;">
           <div style="font-size:3rem;margin-bottom:1.2rem;">🧩</div>
           <div class="card-type">Página de mods</div>
           <div class="card-title" style="font-size:1.9rem;">CH Mods</div>
@@ -638,8 +620,7 @@
           </div>
         </div>
 
-        <div class="project-card primary" id="card3D" onclick="markVisited('3d','badge3D'); openPanel3d()" style="display:flex;flex-direction:column;">
-          <div class="card-badge" id="badge3D">Visitar</div>
+        <div class="project-card primary clickable-highlight" id="card3D" onclick="markVisited('3d','card3D'); openPanel3d()" style="display:flex;flex-direction:column;">
           <div style="font-size:3rem;margin-bottom:1.2rem;">🗿</div>
           <div class="card-type">Portafolio 3D</div>
           <div class="card-title" style="font-size:1.9rem;">CH Design 3D</div>
@@ -663,8 +644,7 @@
           </div>
         </div>
 
-        <div class="project-card secondary" id="cardPlugins" onclick="showToast('Portafolio de Plugins en construcción')">
-          <div class="card-badge construction">En construcción</div>
+        <div class="project-card secondary construction-highlight" id="cardPlugins" onclick="showToast('Portafolio de Plugins en construcción')">
           <div class="card-icon" style="font-size:1.1rem;">⚙️</div>
           <div class="card-type">Plugins de servidor</div>
           <div class="card-title">CH Plugins</div>
@@ -682,8 +662,7 @@
           </div>
         </div>
 
-        <div class="project-card secondary" id="cardWebDesign" onclick="showToast('Portafolio de Design Web en construcción')">
-          <div class="card-badge construction">En construcción</div>
+        <div class="project-card secondary construction-highlight" id="cardWebDesign" onclick="showToast('Portafolio de Design Web en construcción')">
           <div class="card-icon" style="font-size:1.1rem;">🌐</div>
           <div class="card-type">Desarrollo web</div>
           <div class="card-title">CH Design Web</div>
@@ -817,30 +796,24 @@
 
     toastClose.addEventListener('click', hideToast);
 
-    // ── Estado de proyectos visitados (dorado → dorado oscuro) ──
-    function markVisited(key, badgeId) {
+    // ── Estado de proyectos visitados (borde dorado → dorado oscuro) ──
+    function markVisited(key, cardId) {
       try { localStorage.setItem('ch_visited_' + key, '1'); } catch (e) {}
-      const badge = document.getElementById(badgeId);
-      if (badge) {
-        badge.classList.add('visited');
-        badge.textContent = 'Visitado';
-      }
+      const card = document.getElementById(cardId);
+      if (card) card.classList.add('visited');
     }
 
-    function checkVisited(key, badgeId) {
+    function checkVisited(key, cardId) {
       let visited = false;
       try { visited = localStorage.getItem('ch_visited_' + key) === '1'; } catch (e) {}
       if (visited) {
-        const badge = document.getElementById(badgeId);
-        if (badge) {
-          badge.classList.add('visited');
-          badge.textContent = 'Visitado';
-        }
+        const card = document.getElementById(cardId);
+        if (card) card.classList.add('visited');
       }
     }
 
-    checkVisited('mods', 'badgeMods');
-    checkVisited('3d', 'badge3D');
+    checkVisited('mods', 'cardMods');
+    checkVisited('3d', 'card3D');
 
     // ── Tooltip del ID de Discord (toggle por click, útil en móvil) ──
     document.querySelectorAll('.id-info-wrap').forEach(el => {
