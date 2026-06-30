@@ -22,6 +22,10 @@
       --white:     #f2f0ec;
       --radius:    6px;
       --transition: .3s cubic-bezier(.4,0,.2,1);
+      --gold-bright: #f0c14b;
+      --gold-bright-glow: rgba(240,193,75,.4);
+      --gold-dim:    #8a6d2f;
+      --construction: #c0392b;
     }
     .light-mode {
       --bg:        #f5f3ef;
@@ -283,6 +287,80 @@
     .card-tag { font-family: 'DM Mono', monospace; font-size: .62rem; padding: .2rem .6rem; border-radius: 4px; background: var(--surface2); color: var(--text-dim); }
     .card-arrow { color: var(--accent); font-size: 1.1rem; transition: transform var(--transition); }
     .project-card:hover .card-arrow { transform: translate(3px, -3px); }
+
+    /* ── Badges de estado en proyectos clickeables ── */
+    .card-badge {
+      position: absolute; top: 14px; right: 14px;
+      display: flex; align-items: center; gap: .4rem;
+      font-family: 'DM Mono', monospace; font-size: .6rem;
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: .32rem .7rem; border-radius: 20px;
+      border: 1px solid var(--gold-bright);
+      color: var(--gold-bright);
+      background: rgba(240,193,75,.08);
+      box-shadow: 0 0 14px var(--gold-bright-glow);
+      animation: badgePulse 2.2s ease-in-out infinite;
+      z-index: 2;
+      transition: all var(--transition);
+    }
+    .card-badge::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--gold-bright); box-shadow: 0 0 8px var(--gold-bright);
+      flex-shrink: 0;
+    }
+    .card-badge.visited {
+      border-color: var(--gold-dim);
+      color: var(--gold-dim);
+      background: rgba(138,109,47,.1);
+      box-shadow: none;
+      animation: none;
+    }
+    .card-badge.visited::before { background: var(--gold-dim); box-shadow: none; }
+    .card-badge.construction {
+      border-color: var(--construction);
+      color: var(--construction);
+      background: rgba(192,57,43,.1);
+      box-shadow: none;
+      animation: none;
+    }
+    .card-badge.construction::before { background: var(--construction); box-shadow: none; }
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 0 14px var(--gold-bright-glow); }
+      50%      { box-shadow: 0 0 24px var(--gold-bright-glow); }
+    }
+
+    /* ── Tooltip ID Discord ── */
+    .id-info-wrap { position: relative; display: inline-flex; align-items: center; margin-left: .5rem; vertical-align: middle; }
+    .id-info-icon {
+      width: 17px; height: 17px; border-radius: 50%;
+      background: rgba(240,193,75,.15); border: 1px solid var(--gold-bright);
+      color: var(--gold-bright); font-size: .62rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-family: 'DM Mono', monospace;
+      animation: badgePulse 2.2s ease-in-out infinite;
+      user-select: none;
+    }
+    .id-tooltip {
+      position: absolute; bottom: 145%; left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      width: 230px; background: var(--surface2); border: 1px solid var(--gold-bright);
+      border-radius: 8px; padding: .7rem .85rem;
+      font-family: 'Nunito', sans-serif; font-size: .72rem; line-height: 1.5;
+      color: var(--text); text-transform: none; letter-spacing: normal;
+      box-shadow: 0 12px 30px rgba(0,0,0,.5);
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s, transform .25s;
+      z-index: 20;
+    }
+    .id-tooltip::after {
+      content: ''; position: absolute; top: 100%; left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent; border-top-color: var(--gold-bright);
+    }
+    .id-info-wrap:hover .id-tooltip,
+    .id-info-wrap.active .id-tooltip {
+      opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto;
+    }
     #contact { border-top: 1px solid var(--border); }
     .contact-inner { display: flex; align-items: center; justify-content: space-between; gap: 3rem; flex-wrap: wrap; }
     .contact-copy .section-label { margin-bottom: .8rem; }
@@ -537,7 +615,8 @@
       <h2 class="section-title">Lo que estoy construyendo</h2>
       <div class="projects-grid">
 
-        <div class="project-card primary" onclick="window.open('https://checho15a.github.io/chmods/', '_blank')" style="display:flex;flex-direction:column;">
+        <div class="project-card primary" id="cardMods" onclick="markVisited('mods','badgeMods'); window.open('https://checho15a.github.io/chmods/', '_blank')" style="display:flex;flex-direction:column;">
+          <div class="card-badge" id="badgeMods">Visitar</div>
           <div style="font-size:3rem;margin-bottom:1.2rem;">🧩</div>
           <div class="card-type">Página de mods</div>
           <div class="card-title" style="font-size:1.9rem;">CH Mods</div>
@@ -559,7 +638,8 @@
           </div>
         </div>
 
-        <div class="project-card primary" onclick="openPanel3d()" style="display:flex;flex-direction:column;">
+        <div class="project-card primary" id="card3D" onclick="markVisited('3d','badge3D'); openPanel3d()" style="display:flex;flex-direction:column;">
+          <div class="card-badge" id="badge3D">Visitar</div>
           <div style="font-size:3rem;margin-bottom:1.2rem;">🗿</div>
           <div class="card-type">Portafolio 3D</div>
           <div class="card-title" style="font-size:1.9rem;">CH Design 3D</div>
@@ -583,7 +663,8 @@
           </div>
         </div>
 
-        <div class="project-card secondary" onclick="showToast('Portafolio de Plugins en construcción')">
+        <div class="project-card secondary" id="cardPlugins" onclick="showToast('Portafolio de Plugins en construcción')">
+          <div class="card-badge construction">En construcción</div>
           <div class="card-icon" style="font-size:1.1rem;">⚙️</div>
           <div class="card-type">Plugins de servidor</div>
           <div class="card-title">CH Plugins</div>
@@ -602,6 +683,7 @@
         </div>
 
         <div class="project-card secondary" id="cardWebDesign" onclick="showToast('Portafolio de Design Web en construcción')">
+          <div class="card-badge construction">En construcción</div>
           <div class="card-icon" style="font-size:1.1rem;">🌐</div>
           <div class="card-type">Desarrollo web</div>
           <div class="card-title">CH Design Web</div>
@@ -638,7 +720,11 @@
           </p>
           <p style="margin-top:.8rem; font-size:.85rem; color: var(--muted);">
             Usuario: <span style="color:var(--accent); font-family:'DM Mono',monospace;">Checho</span> &nbsp;·&nbsp; 
-            ID: <span style="color:var(--accent); font-family:'DM Mono',monospace;">checho4364</span>
+            ID: <span style="color:var(--accent); font-family:'DM Mono',monospace;">checho_10920</span>
+            <span class="id-info-wrap">
+              <span class="id-info-icon">!</span>
+              <span class="id-tooltip">ID actualizada: la cuenta anterior fue suspendida. Esta es mi ID vigente de Discord.</span>
+            </span>
           </p>
         </div>
         <div class="contact-links">
@@ -656,8 +742,8 @@
   </section>
 
   <footer>
-    <div class="footer-left">© 2025 <span>Checho</span> — Todos los derechos reservados</div>
-    <div class="footer-right" style="font-size:.75rem;color:var(--muted);">CH — 2025</div>
+    <div class="footer-left">© 2026 <span>Checho</span> — Todos los derechos reservados</div>
+    <div class="footer-right" style="font-size:.75rem;color:var(--muted);">CH — 2026</div>
   </footer>
 
   <script>
@@ -730,6 +816,42 @@
     }
 
     toastClose.addEventListener('click', hideToast);
+
+    // ── Estado de proyectos visitados (dorado → dorado oscuro) ──
+    function markVisited(key, badgeId) {
+      try { localStorage.setItem('ch_visited_' + key, '1'); } catch (e) {}
+      const badge = document.getElementById(badgeId);
+      if (badge) {
+        badge.classList.add('visited');
+        badge.textContent = 'Visitado';
+      }
+    }
+
+    function checkVisited(key, badgeId) {
+      let visited = false;
+      try { visited = localStorage.getItem('ch_visited_' + key) === '1'; } catch (e) {}
+      if (visited) {
+        const badge = document.getElementById(badgeId);
+        if (badge) {
+          badge.classList.add('visited');
+          badge.textContent = 'Visitado';
+        }
+      }
+    }
+
+    checkVisited('mods', 'badgeMods');
+    checkVisited('3d', 'badge3D');
+
+    // ── Tooltip del ID de Discord (toggle por click, útil en móvil) ──
+    document.querySelectorAll('.id-info-wrap').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        el.classList.toggle('active');
+      });
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.id-info-wrap.active').forEach(el => el.classList.remove('active'));
+    });
   </script>
 </body>
 </html>
